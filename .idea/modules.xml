@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/IMDBScraper.iml" filepath="$PROJECT_DIR$/.idea/IMDBScraper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/IMDB_keyword_analyzer.iml" filepath="$PROJECT_DIR$/.idea/IMDB_keyword_analyzer.iml" />
     </modules>
   </component>
 </project>
