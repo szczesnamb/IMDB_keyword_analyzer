@@ -25,10 +25,16 @@ def get_movies_for_genre(link):
     return movie_links[:movie_count_limit]
 
 
+def clean_movie_link(link):
+    return link.replace("?ref_=adv_li_tt", "")
+
+
 def get_movie_storyline(link):
-    return ""
+    response = requests.get(imdb_start_page + clean_movie_link(link) + "plotsummary")
+    soup = BeautifulSoup(response.text, 'html.parser')
+    return soup.select_one("li[id*=synopsis]").get_text()
 
 
 print(get_movies_for_genre(romance_link))
-
+print(get_movie_storyline(get_movies_for_genre(fantasy_link)[1]))
 
