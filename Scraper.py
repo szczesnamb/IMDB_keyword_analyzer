@@ -54,6 +54,9 @@ def generate_file_name(f_name_prefix, number):
 
 
 # TODO: refactor
-print(get_movies_for_genre(romance_link))
-save_to_file(get_movie_storyline(get_movies_for_genre(fantasy_link)[1]), 'fantasy', 0)
+# print(get_movies_for_genre(romance_link))
+movies = get_movies_for_genre(fantasy_link)
+for x in range(0, 25):
+    save_to_file(get_movie_storyline(movies[x]), 'fantasy', x)
+# save_to_file(get_movie_storyline(get_movies_for_genre(fantasy_link)[1]), 'fantasy', 0)
 
