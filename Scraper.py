@@ -1,4 +1,6 @@
 import io
+
+import re
 from bs4 import BeautifulSoup
 import requests
 
@@ -20,6 +22,8 @@ fantasy_link = "http://www.imdb.com/search/title?genres=fantasy&explore=title_ty
 html_link_selector = 'div.lister-item h3.lister-item-header a'
 link_pollution = "?ref_=adv_li_tt"
 html_sypnosis_selector = "li[id*=synopsis]"
+html_movie_title_selector = "div.title_wrapper h1"
+html_original_title_selector = "div.title_wrapper div.originalTitle"
 
 
 def get_movies_for_genre(link):
@@ -34,29 +38,36 @@ def clean_movie_link(link):
 
 
 def get_movie_storyline(link):
-    response = requests.get(generate_movie_link(link))
+    response = requests.get(link + "plotsummary")
     soup = BeautifulSoup(response.text, 'html.parser')
     return soup.select_one(html_sypnosis_selector).get_text()
 
 
+def get_movie_title(link):
+    response = requests.get(link)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    return soup.select_one(html_original_title_selector).get_text().replace("(original title)", "").replace(":", "")\
+        if soup.select_one(html_original_title_selector) is not None \
+        else re.sub(r'\([^)]*\)', '', soup.select_one(html_movie_title_selector).get_text())
+
+
 def generate_movie_link(link):
-    return imdb_start_page + clean_movie_link(link) + "plotsummary"
+    return imdb_start_page + clean_movie_link(link)
 
 
-# TODO: wywalic generate na zewnatrz
-def save_to_file(text, f_name_prefix, number):
-    with io.open(generate_file_name(f_name_prefix, number), "w", encoding="utf-8") as f:
+def save_to_file(text, filename):
+    with io.open(filename, "w", encoding="utf-8") as f:
         f.write(text)
 
 
-def generate_file_name(f_name_prefix, number):
-    return storyline_directory + f_name_prefix + str(number) + '.txt'
+def generate_file_name(title, f_name_prefix, number):
+    return storyline_directory + title + '_' + f_name_prefix + str(number) + '.txt'
 
 
-# TODO: refactor
-# print(get_movies_for_genre(romance_link))
-movies = get_movies_for_genre(fantasy_link)
+movies = get_movies_for_genre(action_link)
 for x in range(0, 25):
-    save_to_file(get_movie_storyline(movies[x]), 'fantasy', x)
-# save_to_file(get_movie_storyline(get_movies_for_genre(fantasy_link)[1]), 'fantasy', 0)
+    movie_link = generate_movie_link(movies[x])
+    title = get_movie_title(movie_link)[:-1].replace("\\.", "")
+    filename = generate_file_name(title, 'action', x)
+    save_to_file(get_movie_storyline(movie_link), filename)
 
